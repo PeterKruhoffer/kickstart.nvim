@@ -11,10 +11,24 @@ return {
     -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
     { 'j-hui/fidget.nvim', opts = {} },
 
+    -- Install none-ls for diagnostics, code actions, and formatting
+    {
+      'nvimtools/none-ls.nvim',
+      dependencies = {
+        'nvimtools/none-ls-extras.nvim',
+      },
+    },
+
     -- Allows extra capabilities provided by nvim-cmp
     'hrsh7th/cmp-nvim-lsp',
   },
   config = function()
+    local null_ls = require 'null-ls'
+    -- null_ls.setup {
+    --   sources = {
+    --     require 'none-ls.diagnostics.eslint_d',
+    --   },
+    -- }
     -- Brief aside: **What is LSP?**
     --
     -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -152,18 +166,14 @@ return {
     --  - settings (table): Override the default settings passed when initializing the server.
     --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
     local servers = {
-      -- clangd = {},
       gopls = {},
-      -- pyright = {},
-      -- rust_analyzer = {},
-      -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-      --
-      -- Some languages (like typescript) have entire language plugins that can be useful:
-      --    https://github.com/pmizio/typescript-tools.nvim
-      --
-      -- But for many setups, the LSP (`ts_ls`) will work just fine
       ts_ls = {},
-      --
+      svelte = {},
+      astro = {},
+      tailwindcss = {},
+      cssls = {},
+      html = {},
+      jsonls = {},
 
       lua_ls = {
         -- cmd = {...},
@@ -207,6 +217,34 @@ return {
           server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
           require('lspconfig')[server_name].setup(server)
         end,
+      },
+    }
+    -- Congifure LSP linting, formatting, diagnostics, and code actions
+    local formatting = null_ls.builtins.formatting
+    local diagnostics = require 'none-ls.diagnostics.eslint_d'
+    local code_actions = require 'none-ls.code_actions.eslint'
+
+    null_ls.setup {
+      border = 'rounded',
+      sources = {
+        -- formatting
+        formatting.prettier,
+        formatting.stylua,
+        formatting.ocamlformat,
+
+        -- diagnostics
+        diagnostics.with {
+          condition = function(utils)
+            return utils.root_has_file { '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.json' }
+          end,
+        },
+
+        -- code actions
+        code_actions.with {
+          condition = function(utils)
+            return utils.root_has_file { '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.json' }
+          end,
+        },
       },
     }
   end,
