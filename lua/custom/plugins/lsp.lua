@@ -23,7 +23,17 @@ return {
     'hrsh7th/cmp-nvim-lsp',
   },
   config = function()
-    local null_ls = require 'null-ls'
+    local vtsls_inlay_hints = {
+      enumMemberValues = { enabled = true },
+      functionLikeReturnTypes = { enabled = true },
+      functionParameterTypes = { enabled = true },
+      parameterNames = { enabled = 'all' },
+      parameterNameWhenArgumentMatchesNames = { enabled = true },
+      propertyDeclarationTypes = { enabled = true },
+      variableTypes = { enabled = true },
+      variableTypeWhenTypeMatchesNames = { enabled = true },
+    }
+    --local null_ls = require 'null-ls'
     -- null_ls.setup {
     --   sources = {
     --     require 'none-ls.diagnostics.eslint_d',
@@ -167,7 +177,7 @@ return {
     --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
     local servers = {
       gopls = {},
-      ts_ls = {},
+      -- ts_ls = {},
       svelte = {},
       astro = {},
       tailwindcss = {},
@@ -189,6 +199,39 @@ return {
           },
         },
       },
+      eslint = {
+        autostart = false,
+        cmd = { 'vscode-eslint-language-server', '--stdio', '--max-old-space-size=12288' },
+        settings = { format = false },
+      },
+      vtsls = {
+        settings = {
+          complete_function_calls = true,
+          vtsls = {
+            autoUseWorkspaceTsdk = true,
+            experimental = {
+              completion = {
+                enableServerSideFuzzyMatch = true,
+              },
+            },
+          },
+          typescript = {
+            updateImportOnFileMove = { enabled = 'always' },
+            suggest = {
+              completeFunctionCalls = true,
+            },
+            tsserver = {
+              maxTsServerMemory = 12288,
+            },
+            inlayHints = vtsls_inlay_hints,
+          },
+          javascript = { inlayHints = vtsls_inlay_hints },
+        },
+      },
+    }
+    local formatters = {
+      prettierd = {},
+      stylua = {},
     }
 
     -- Ensure the servers and tools above are installed
@@ -201,7 +244,10 @@ return {
 
     -- You can add other tools here that you want Mason to install
     -- for you, so that they are available from within Neovim.
-    local ensure_installed = vim.tbl_keys(servers or {})
+    --
+    --local ensure_installed = vim.tbl_keys(servers, formatters, {})
+    local mason_tools_to_install = vim.tbl_keys(vim.tbl_deep_extend('force', {}, servers, formatters))
+    local ensure_installed = vim.tbl_filter(function() end, mason_tools_to_install)
     vim.list_extend(ensure_installed, {
       'stylua', -- Used to format Lua code
     })
@@ -220,7 +266,7 @@ return {
       },
     }
     -- Congifure LSP linting, formatting, diagnostics, and code actions
-    local formatting = null_ls.builtins.formatting
+    --[[ local formatting = null_ls.builtins.formatting
     local diagnostics = require 'none-ls.diagnostics.eslint_d'
     local code_actions = require 'none-ls.code_actions.eslint'
 
@@ -246,6 +292,6 @@ return {
           end,
         },
       },
-    }
+    } ]]
   end,
 }
