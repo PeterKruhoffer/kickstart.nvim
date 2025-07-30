@@ -19,6 +19,15 @@ vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Format current buffer
+vim.keymap.set('n', '<leader>f', function()
+  require('conform').format {
+    async = true,
+    timeout_ms = 500,
+    lsp_format = 'fallback',
+  }
+end, { desc = 'Format the current buffer' })
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
