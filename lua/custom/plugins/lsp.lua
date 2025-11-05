@@ -184,6 +184,7 @@ return {
       cssls = {},
       html = {},
       jsonls = {},
+      biome = {},
 
       lua_ls = {
         -- cmd = {...},
