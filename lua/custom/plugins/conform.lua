@@ -39,6 +39,18 @@ return { -- Autoformat
       javascript = { 'prettierd', 'prettier', stop_after_first = true },
       typescript = { 'prettierd', 'prettier', stop_after_first = true },
       typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+      cs = { 'csharpier_pkn' },
+      csproj = { 'csharpier_pkn' },
+    },
+    formatters = {
+      csharpier_pkn = {
+        command = 'csharpier',
+        args = {
+          'format',
+          '--write-stdout',
+        },
+        to_stdin = true,
+      },
     },
   },
 }
