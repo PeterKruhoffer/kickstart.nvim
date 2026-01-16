@@ -70,3 +70,6 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 8
+
+-- Add solid borders to all floating windows
+vim.o.winborder = 'bold'
